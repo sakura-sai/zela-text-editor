@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ZELA Advanced Text Editor</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Lobster&family=Montserrat:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&family=Roboto+Mono&display=swap" rel="stylesheet">
+
+ 
+
+  <style>
+
+    :root {
+
+      --primary-color: #06e36d;
+
+      --accent-color: #0b0d14;
+
+      --glass-bg: rgba(15, 15, 25, 0.9);
+
+      --toolbar-bg: rgba(255, 255, 255, 0.1);
+
+    }
+
+
+
+    body {
+
+      margin: 0;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      min-height: 100vh;
+
+      font-family: 'Poppins', sans-serif;
+
+      background: #0b0d17 url("https://images.unsplash.com/photo-1506318137071-a8e063b4b519?q=80&w=2070&auto=format&fit=crop") center/cover fixed;
+
+    }
+
+.editor-container {
+  width: 95%;
+  max-width: 1000px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  padding: 30px;
+  border-radius: 20px;
+  margin: 20px auto; /* Centers the editor on the screen */
+  height: auto;      /* Allows container to grow with text */
+  min-height: 600px; 
+}
+
+h1 {
+  font-size: 38px;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  text-align: center;
+  transition: 0.4s;
+  
+  /* Change color to White */
+  color: #f8f7f7; 
+  
+  /* Change glow to Purple/Blue */
+  text-shadow: 0 0 10px #4c6ace, 0 0 20px #3498db; 
+}
+
+h1:hover {
+  transform: scale(1.05);
+  /* Intense glow on hover */
+  text-shadow: 0 0 20px #8e44ad, 0 0 40px #3498db, 0 0 60px #ffffff;
+}
+
+    .toolbar {
+
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 8px;
+
+      padding: 15px;
+
+      background: var(--toolbar-bg);
+
+      border-radius: 12px;
+
+      margin-bottom: 15px;
+
+      justify-content: center;
+
+      align-items: center;
+
+    }
+
+
+
+    .toolbar button, .toolbar select {
+
+      padding: 8px 12px;
+
+      cursor: pointer;
+
+      border: none;
+
+      border-radius: 6px;
+
+      background: white;
+
+      color: #333;
+
+      font-weight: 600;
+
+      transition: 0.2s;
+
+    }
+
+
+
+    .toolbar button:hover {
+
+      background: var(--primary-color);
+
+      transform: translateY(-2px);
+
+    }
+
+
+
+    .toolbar button.active {
+
+      background: #ffcc00; /* Format Painter Active State */
+
+    }
+
+
+
+    #editor {
+  width: 100%;
+  min-height: 450px; /* Minimum size when empty */
+  height: auto;      /* THIS IS THE KEY: it grows as you type */
+  background: white;
+  color: #000000;
+  padding: 25px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 18px;
+  outline: none;
+  box-sizing: border-box;
+  overflow-y: visible; /* Disable the box's internal scrollbar */
+}
+
+
+    #editor:focus {
+
+      box-shadow: 0 0 15px var(--primary-color);
+
+    }
+
+
+
+    .stats-bar {
+
+      text-align: right;
+
+      font-size: 13px;
+
+      color: #bdc3c7;
+
+      margin-top: 10px;
+
+    }
+
+
+
+    .action-buttons {
+
+      display: flex;
+
+      justify-content: center;
+
+      gap: 15px;
+
+      margin-top: 20px;
+
+    }
+
+
+
+    .btn-main {
+
+      padding: 12px 25px;
+
+      background: var(--primary-color);
+
+      color: var(--accent-color);
+
+      border: none;
+
+      border-radius: 50px;
+
+      cursor: pointer;
+
+      font-weight: bold;
+
+      transition: 0.3s;
+
+    }
+
+
+
+    .btn-main:hover {
+
+      box-shadow: 0 0 15px var(--primary-color);
+
+      filter: brightness(1.1);
+
+    }
+
+ @keyframes shapeFloat {
+
+  0% { transform: translateY(0px) rotate(0deg); }
+
+  50% { transform: translateY(-20px) rotate(10deg); }
+
+  100% { transform: translateY(0px) rotate(0deg); }
+
+}
+
+
+
+.animated-shape {
+
+  display: inline-block;
+
+  margin: 10px;
+
+  transition: all 0.3s ease;
+
+  animation: shapeFloat 3s ease-in-out infinite;
+
+  cursor: pointer;
+
+}
+
+
+
+.animated-shape:hover {
+
+  filter: brightness(1.2);
+
+  transform: scale(1.2);
+
+}
+
+@keyframes shapeFloat {
+
+  0% { transform: translateY(0px) rotate(0deg); }
+
+  50% { transform: translateY(-15px) rotate(5deg); }
+
+  100% { transform: translateY(0px) rotate(0deg); }
+
+}
+
+
+
+.animated-shape {
+
+  display: inline-block;
+
+  margin: 0 10px;
+
+  animation: shapeFloat 3s ease-in-out infinite;
+
+  /* This prevents the cursor from trying to type inside the shape */
+
+  user-select: none;
+
+}
+
+@keyframes shapeFloat {
+
+  0% { transform: translateY(0px); }
+
+  50% { transform: translateY(-10px); }
+
+  100% { transform: translateY(0px); }
+
+}
+
+
+
+.zela-shape {
+
+  display: inline-block;
+
+  vertical-align: middle;
+
+  margin: 5px;
+
+  user-select: none;
+
+  /* Do NOT put 'animation' here. The JavaScript will add it only for Glowing shapes. */
+
+}
+
+
+
+@keyframes shapeFloat {
+
+  0%, 100% { transform: translateY(0); }
+
+  50% { transform: translateY(-10px); }
+
+}
+
+
+
+.zela-shape:hover {
+
+  filter: brightness(1.2);
+
+  cursor: pointer;
+
+} .zela-shape {
+
+  display: inline-block;
+
+  vertical-align: middle;
+
+  margin: 5px;
+
+  animation: shapeFloat 2.5s ease-in-out infinite;
+
+  user-select: none;
+
+  /* Ensuring the shape stays exactly the size we want */
+
+  flex-shrink: 0;
+
+}
+
+
+
+@keyframes shapeFloat {
+
+  0%, 100% { transform: translateY(0); }
+
+  50% { transform: translateY(-8px); }
+
+} /* Base Style for all shapes */
+
+.zela-shape {
+
+  display: inline-block;
+
+  vertical-align: middle;
+
+  margin: 5px;
+
+  user-select: none;
+
+  flex-shrink: 0;
+
+  transition: all 0.3s ease;
+
+}
+
+
+
+/* Float animation only applies if the JS adds the property */
+
+@keyframes shapeFloat {
+
+  0%, 100% { transform: translateY(0); }
+
+  50% { transform: translateY(-13px); }
+
+} .reflected-text {
+
+  display: inline-block;
+
+  position: relative;
+
+  /* This creates the flipped mirror image */
+
+  -webkit-box-reflect: below -10px linear-gradient(transparent, rgba(255, 255, 255, 0.3));
+
+  margin-bottom: 25px; /* Adds space for the reflection to show */
+
+} #clock-container {
+
+  text-shadow: 0 0 5px var(--primary-color);
+
+  letter-spacing: 1px;
+
+  font-family: 'Roboto Mono', monospace;
+
+} .side-panel {
+
+  position: fixed;
+
+  left: 20px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  background: rgba(15, 15, 25, 0.9);
+
+  padding: 15px;
+
+  border-radius: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  color: white;
+
+  width: 160px;
+
+  z-index: 100;
+
+  text-align: center;
+
+}
+
+
+
+.side-panel label {
+
+  font-size: 12px;
+
+  display: block;
+
+  margin-bottom: 8px;
+
+  opacity: 0.7;
+
+}
+
+
+
+.side-panel select {
+
+  width: 100%;
+
+  padding: 5px;
+
+  background: #333;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 4px;
+
+  margin-bottom: 15px;
+
+}
+
+
+
+.time-display {
+
+  font-family: 'Roboto Mono', monospace;
+
+}
+
+
+
+#side-city {
+
+  font-size: 14px;
+
+  font-weight: bold;
+
+}
+
+
+
+#side-time {
+
+  font-size: 18px;
+
+  margin-top: 5px;
+
+} @keyframes magicFloat {
+  0%, 100% { 
+    transform: translateY(0); 
+    filter: hue-rotate(0deg); 
+  }
+  50% { 
+    transform: translateY(-10px); 
+    filter: hue-rotate(20deg); /* Subtle color shift while floating */
+  }
+}
+
+.magic-floating {
+  display: inline-block;
+  animation: magicFloat 2s ease-in-out infinite;
+  
+  /* Purplish-Bluish Gradient */
+  background: linear-gradient(90deg, #9b59b6, #3498db, #8e44ad);
+  background-size: 200% auto;
+ -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* Matching Glow */
+  text-shadow: 0 0 10px rgba(155, 89, 182, 0.5);
+  font-weight: bold;
+  white-space: pre;
+} /* 1. The Main Page Scrollbar (Right Side of Screen) */
+html::-webkit-scrollbar {
+  width: 12px;
+}
+
+html::-webkit-scrollbar-track {
+  background: #0b0d17; /* Matches your dark background */
+}
+
+html::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #9b59b6, #3498db);
+  border-radius: 10px;
+  border: 3px solid #0b0d17; /* Creates a gap effect */
+  box-shadow: 0 0 10px rgba(155, 89, 182, 0.8);
+}
+
+/* 2. The Editor Box Scrollbar (If text overflows) */
+#editor::-webkit-scrollbar {
+  width: 8px;
+}
+
+#editor::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+#editor::-webkit-scrollbar-thumb {
+  background: #8e44ad; /* Solid purple thumb */
+  border-radius: 10px;
+  box-shadow: 0 0 15px #3498db; /* Blue glow */
+}
+
+/* Add a hover effect to make it feel high-tech */
+#editor::-webkit-scrollbar-thumb:hover, 
+html::-webkit-scrollbar-thumb:hover {
+  background: #3498db;
+  box-shadow: 0 0 20px #9b59b6;
+} /* When Focus Mode is active, hide everything except the editor */
+body.focus-mode .toolbar, 
+body.focus-mode .side-panel, 
+body.focus-mode .stats-bar, 
+body.focus-mode h1, 
+body.focus-mode .action-buttons {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+/* Adjust the container to center the editor perfectly */
+body.focus-mode .editor-container {
+    border: none;
+    background: transparent;
+    backdrop-filter: none;
+    max-width: 800px;
+    margin-top: 5vh;
+    transition: all 0.5s ease;
+}
+
+/* Ensure the editor stays visible and looks like a clean sheet of paper */
+body.focus-mode #editor {
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    background: #ffffff;
+    color: #1a1a1a; /* Dark text for readability on white */
+}
+
+/* Focus Mode Exit Button - stays visible so you can turn it off */
+#exit-focus {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    padding: 10px 20px;
+    background: var(--primary-color);
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+body.focus-mode #exit-focus {
+    display: block;
+} /* The Ghost Writer Suggestion */
+#ghost-text {
+    color: rgba(150, 150, 150, 0.5) !important; /* Semi-transparent gray */
+    font-style: italic;
+    pointer-events: none; /* User cannot click or select the ghost */
+    user-select: none;    /* Prevents highlighting the ghost */
+    display: inline;
+}
+
+/* Optional: Pulse effect to make the ghost look "alive" */
+@keyframes ghostPulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+    100% { opacity: 0.3; }
+}
+
+#ghost-text {
+    animation: ghostPulse 2s infinite ease-in-out;
+}
+
+/* UI Indicator for Ghost Mode */
+.ghost-indicator {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 10px;
+    vertical-align: middle;
+}#ghost-toggle-btn:hover {
+    background: #06e36d !important;
+    color: #0b0d14 !important;
+    box-shadow: 0 0 10px #06e36d;
+}
+
+#ghost-toggle-btn.off {
+    color: #ff4757;
+    border-color: #ff4757;
+}
+
+#ghost-toggle-btn.off:hover {
+    background: #ff4757 !important;
+    color: white !important;
+    box-shadow: 0 0 10px #ff4757;
+}</style>
+
+</head>
+
+<body>
+
+
+
+<div class="editor-container">
+
+  <h1>ZELA Advanced Editor</h1>
+
+
+
+  <div class="toolbar" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+
+ 
+
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+
+    <button onclick="format('bold')">B</button>
+
+    <button onclick="format('italic')">I</button>
+
+    <button onclick="format('underline')">U</button>
+
+    <button onclick="format('justifyLeft')">Left</button>
+
+    <button onclick="format('justifyCenter')">Center</button>
+
+   
+
+    <select onchange="format('fontName', this.value)">
+
+  <option value="Poppins">Poppins (Modern)</option>
+
+  <option value="Playfair Display">Playfair (Elegant)</option>
+
+  <option value="Montserrat">Montserrat (Clean)</option>
+
+  <option value="Dancing Script">Dancing Script (Handwritten)</option>
+
+  <option value="Lobster">Lobster (Fancy)</option>
+
+  <option value="Roboto Mono">Roboto Mono (Typewriter)</option>
+
+</select>
+
+
+
+    <select id="fontSizeSelect" onchange="changeSize(this.value)">
+
+  <option value="12px">12px</option>
+
+  <option value="14px">14px</option>
+
+  <option value="16px">16px</option>
+
+  <option value="18px" selected>18px</option>
+
+  <option value="24px">24px</option>
+
+  <option value="36px">36px</option>
+
+  <option value="48px">48px</option>
+
+  <option value="72px">72px</option>
+
+  <option value="96px">96px</option>
+
+  <option value="120px">120px</option>
+
+</select>
+
+    <input type="color" title="Text Color" onchange="format('foreColor', this.value)">
+
+    <input type="color" id="glowColor" title="Glow Color" value="#06e36d">
+
+    <button onclick="addGlow()">✨ Glow</button>
+
+    <button onclick="addReflection()">🌊 Reflect</button>
+
+  </div>
+
+
+
+  <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: center;">
+
+    <div style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 8px;">
+
+      <select id="shapeStyle"><option value="floating">Floating</option><option value="normal">Normal</option></select>
+
+      <select id="shapeSelect"><option value="circle">Circle</option><option value="square">Square</option></select>
+
+      <button onclick="insertShape()">💠 Insert Shape</button>
+
+    </div>
+
+
+<button onclick="applyMagicMode()" style="background: linear-gradient(45deg, #8e44ad, #3498db); color: white; font-weight: bold; border: 1px solid rgba(255,255,255,0.3);">
+  🪄 Magic Text
+</button>
+    <button onclick="document.getElementById('image-input').click()">🖼️ Image</button>
+
+    <button onclick="lockDocument()">🔐 Lock</button>
+
+   
+<button id="ghost-toggle-btn" onclick="toggleGhostWriter()" style="background: rgba(0, 0, 0, 0.1); color: #fafbfc; border: 1px solid #06e36d; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; transition: 0.3s;">
+  👻 Ghost Writer: <span id="ghost-status">ON</span>
+</button>
+ 
+
+</div>    <button onclick="clearAllText()" style="background:#ff4757; color:white;">🗑️ Clear</button>
+
+ 
+
+
+
+  <input type="file" id="image-input" style="display: none;" accept="image/*" onchange="importImage(event)">
+
+
+
+  <div id="movable-panel" class="side-panel">
+
+  <div id="movable-panel-header" style="cursor: move; background: rgba(255,255,255,0.1); margin: -15px -15px 10px -15px; padding: 10px; border-radius: 12px 12px 0 0; font-size: 10px; color: #888;">
+
+    ⠿ DRAG ME
+
+  </div>
+
+
+
+  <label>Select Region:</label>
+
+  <select id="countrySelect" onchange="updateTimeZone()">
+
+  <option value="Asia/Kolkata" selected>India</option> <option value="Asia/Kabul">Afghanistan</option>
+
+  <option value="Europe/Tirane">Albania</option>
+
+  <option value="Africa/Algiers">Algeria</option>
+
+  <option value="Europe/Andorra">Andorra</option>
+
+  <option value="Africa/Luanda">Angola</option>
+
+  <option value="America/Argentina/Buenos_Aires">Argentina</option>
+
+  <option value="Australia/Sydney">Australia</option>
+
+  <option value="Europe/Vienna">Austria</option>
+
+  <option value="Asia/Dhaka">Bangladesh</option>
+
+  <option value="Europe/Brussels">Belgium</option>
+
+  <option value="America/Sao_Paulo">Brazil</option>
+
+  <option value="America/Toronto">Canada</option>
+
+  <option value="Asia/Shanghai">China</option>
+
+  <option value="Africa/Cairo">Egypt</option>
+
+  <option value="Europe/Paris">France</option>
+
+  <option value="Europe/Berlin">Germany</option>
+
+  <option value="Asia/Jakarta">Indonesia</option>
+
+  <option value="Europe/Rome">Italy</option>
+
+  <option value="Asia/Tokyo">Japan</option>
+
+  <option value="Asia/Seoul">Korea (South)</option>
+
+  <option value="America/Mexico_City">Mexico</option>
+
+  <option value="Africa/Lagos">Nigeria</option>
+
+  <option value="Asia/Karachi">Pakistan</option>
+
+  <option value="Europe/Warsaw">Poland</option>
+
+  <option value="Europe/Moscow">Russia</option>
+
+  <option value="Africa/Johannesburg">South Africa</option>
+
+  <option value="Europe/Madrid">Spain</option>
+
+  <option value="Asia/Dubai">UAE</option>
+
+  <option value="Europe/London">UK</option>
+
+  <option value="America/New_York">USA</option>
+
+</select>
+
+  <div class="time-display">
+
+    <div id="side-city">Kolkata</div>
+
+    <div id="side-time">00:00:00</div>
+
+  </div>
+
+
+
+</div>
+
+  <div id="editor" contenteditable="true" spellcheck="true"></div>
+
+ 
+
+  <div class="stats-bar">
+
+    <span id="char-count">Characters: 0</span> |
+
+    <span id="word-count">Words: 0</span>
+
+  </div>
+
+
+
+  <div class="action-buttons">
+
+    <button class="btn-main" onclick="saveToLocal()">Save to Browser</button>
+
+    <button class="btn-main" onclick="downloadFile()">Download HTML</button>
+
+  </div>
+
+</div>
+
+
+
+<script>
+
+  const editor = document.getElementById('editor');
+
+  const painterBtn = document.getElementById('painterBtn');
+
+  let copiedStyle = null;
+
+  let painterActive = false;
+
+
+
+  // Initialize
+
+  window.onload = () => {
+
+    const saved = localStorage.getItem('zela_content');
+
+    if (saved) editor.innerHTML = saved;
+
+    updateCounts();
+
+
+
+    if (localStorage.getItem("zela_locked") === "true") {
+
+      editor.contentEditable = "false";
+
+      setTimeout(unlockDocument, 500);
+
+    }
+
+  };
+
+
+
+  function format(command, value = null) {
+
+    document.execCommand(command, false, value);
+
+    editor.focus();
+
+  }
+
+
+
+ 
+
+ 
+
+
+
+  function addGlow() {
+
+    const selection = window.getSelection();
+
+    if (!selection.rangeCount || selection.isCollapsed) return;
+
+    const color = document.getElementById("glowColor").value;
+
+    const span = `<span style="text-shadow: 0 0 10px ${color}, 0 0 20px ${color};">${selection.toString()}</span>`;
+
+    document.execCommand("insertHTML", false, span);
+
+  }
+
+
+
+  // Format Painter Logic
+
+  function toggleFormatPainter() {
+
+    const selection = window.getSelection();
+
+    if (!painterActive) {
+
+      if (selection.rangeCount > 0 && !selection.isCollapsed) {
+
+        const parent = selection.anchorNode.parentElement;
+
+        const style = window.getComputedStyle(parent);
+
+        copiedStyle = {
+
+          fontFamily: style.fontFamily,
+
+          fontSize: style.fontSize,
+
+          color: style.color,
+
+          textShadow: style.textShadow,
+
+          fontWeight: style.fontWeight
+
+        };
+
+        painterActive = true;
+
+        painterBtn.classList.add('active');
+
+      }
+
+    } else {
+
+      painterActive = false;
+
+      painterBtn.classList.remove('active');
+
+    }
+
+  }
+
+
+
+  editor.addEventListener("mouseup", () => {
+
+    if (!painterActive || !copiedStyle) return;
+
+    const selection = window.getSelection();
+
+    if (selection.isCollapsed) return;
+
+
+
+    const span = document.createElement("span");
+
+    Object.assign(span.style, copiedStyle);
+
+    const range = selection.getRangeAt(0);
+
+    range.surroundContents(span);
+
+   
+
+    painterActive = false;
+
+    painterBtn.classList.remove('active');
+
+  });
+
+
+
+  // Counters & Auto-Save
+
+  function updateCounts() {
+
+    const text = editor.innerText.trim();
+
+    document.getElementById('char-count').textContent = `Characters: ${text.length}`;
+
+    const words = text.split(/\s+/).filter(w => w.length > 0);
+
+    document.getElementById('word-count').textContent = `Words: ${words.length}`;
+
+    localStorage.setItem('zela_content', editor.innerHTML);
+
+  }
+
+  editor.addEventListener('input', updateCounts);
+
+
+
+  // File Handling
+
+  function importImage(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+
+      const img = `<img src="${e.target.result}" style="max-width:100%; border-radius:8px; display:block; margin:10px auto;" />`;
+
+      format('insertHTML', img);
+
+    };
+
+    reader.readAsDataURL(file);
+
+  }
+
+
+
+  function downloadFile() {
+
+    const blob = new Blob([editor.innerHTML], { type: 'text/html' });
+
+    const link = document.createElement('a');
+
+    link.href = URL.createObjectURL(blob);
+
+    link.download = 'zela-document.html';
+
+    link.click();
+
+  }
+
+
+
+  function saveToLocal() {
+
+    localStorage.setItem('zela_content', editor.innerHTML);
+
+    alert("Saved to local storage!");
+
+  }
+
+
+
+  // Security Features
+
+  function lockDocument() {
+
+    const pw = prompt("Set a lock password:");
+
+    if (!pw) return;
+
+    localStorage.setItem("zela_password", btoa(pw));
+
+    localStorage.setItem("zela_locked", "true");
+
+    editor.contentEditable = "false";
+
+    alert("Document Locked.");
+
+  }
+
+
+
+  function unlockDocument() {
+
+    const input = prompt("Enter password to unlock:");
+
+    if (btoa(input) === localStorage.getItem("zela_password")) {
+
+      localStorage.setItem("zela_locked", "false");
+
+      editor.contentEditable = "true";
+
+      alert("Unlocked!");
+
+    } else {
+
+      alert("Incorrect password!");
+
+      if (localStorage.getItem("zela_locked") === "true") editor.contentEditable = "false";
+
+    }
+
+  }
+
+
+
+  function clearAllText() {
+
+    if (confirm("Delete all content?")) {
+
+      editor.innerHTML = "";
+
+      updateCounts();
+
+    }
+
+  }
+
+
+
+  // Keyboard Shortcuts
+
+  window.addEventListener('keydown', (e) => {
+
+    if (e.ctrlKey && e.shiftKey && e.key === "Delete") {
+
+      e.preventDefault();
+
+      clearAllText();
+
+    }
+
+  });
+
+function addAnimatedShape() {
+
+  const color = document.getElementById("glowColor").value;
+
+  const shapes = [
+
+    `width:50px; height:50px; background:${color};`, // Square
+
+    `width:50px; height:50px; background:${color}; border-radius:50%;`, // Circle
+
+    `width:0; height:0; border-left:25px solid transparent; border-right:25px solid transparent; border-bottom:50px solid ${color};` // Triangle
+
+  ];
+
+ 
+
+  const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+
+  const shapeHTML = `<div class="animated-shape" style="${randomShape}" contenteditable="false"></div>`;
+
+ 
+
+  format('insertHTML', shapeHTML);
+
+}
+
+function insertSpecificShape() {
+
+  const color = document.getElementById("glowColor").value;
+
+  const shapeType = document.getElementById("shapeSelect").value;
+
+ 
+
+  let clipPath = "";
+
+ 
+
+  if (shapeType === "circle") {
+
+    clipPath = "circle(50%)";
+
+  } else if (shapeType === "square") {
+
+    clipPath = "inset(0%)";
+
+  } else if (shapeType === "triangle") {
+
+    clipPath = "polygon(50% 0%, 0% 100%, 100% 100%)";
+
+  } else if (shapeType === "star") {
+
+    clipPath = "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)";
+
+  }
+
+
+
+  const shapeHTML = `
+
+    <span class="animated-shape"
+
+          style="width:50px; height:50px; background:${color}; clip-path:${clipPath}; vertical-align:middle;"
+
+          contenteditable="false">
+
+    </span>&nbsp;`;
+
+ 
+
+  format('insertHTML', shapeHTML);
+
+}
+
+function insertShape() {
+
+  const color = document.getElementById("glowColor").value;
+
+  const shapeType = document.getElementById("shapeSelect").value;
+
+  let path = "";
+
+
+
+  // Coordinate math for WordPad-style shapes
+
+  switch(shapeType) {
+
+    case "circle": path = "circle(50% at 50% 50%)"; break;
+
+    case "square": path = "inset(0%)"; break;
+
+    case "triangle": path = "polygon(50% 0%, 0% 100%, 100% 100%)"; break;
+
+    case "star": path = "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"; break;
+
+    case "diamond": path = "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)"; break;
+
+  }
+
+
+
+  // Creating the HTML element
+
+  const shapeHTML = `<span class="zela-shape" contenteditable="false"
+
+    style="width: 40px; height: 40px; background: ${color}; clip-path: ${path};">
+
+    </span>&nbsp;`;
+
+
+
+  // Insert at the current cursor position
+
+  editor.focus();
+
+  document.execCommand('insertHTML', false, shapeHTML);
+
+} function insertShape() {
+
+  const color = document.getElementById("glowColor").value;
+
+  const shapeType = document.getElementById("shapeSelect").value;
+
+  const styleType = document.getElementById("shapeStyle").value;
+
+  let path = "";
+
+
+
+  switch(shapeType) {
+
+    case "circle": path = "circle(50% at 50% 50%)"; break;
+
+    case "square": path = "inset(0%)"; break;
+
+    case "triangle": path = "polygon(50% 0%, 0% 100%, 100% 100%)"; break;
+
+    case "star": path = "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"; break;
+
+  }
+
+
+
+  // Look closely here: we define the effects ONLY if styleType is 'glowing'
+
+  let extraStyles = "";
+
+  if (styleType === "glowing") {
+
+    extraStyles = `box-shadow: 0 0 15px ${color}; filter: drop-shadow(0 0 5px ${color}); animation: shapeFloat 2.5s ease-in-out infinite;`;
+
+  } else {
+
+    // For normal, we ensure no shadow and no animation
+
+    extraStyles = `box-shadow: none; filter: none; animation: none;`;
+
+  }
+
+
+
+  const shapeHTML = `&nbsp;<span class="zela-shape" contenteditable="false"
+
+    style="width: 40px; height: 40px; background: ${color}; clip-path: ${path}; ${extraStyles}">
+
+    </span>&nbsp;`;
+
+
+
+  editor.focus();
+
+  document.execCommand('insertHTML', false, shapeHTML);
+
+} function addReflection() {
+
+  const selection = window.getSelection();
+
+  if (!selection.rangeCount || selection.isCollapsed) {
+
+    alert("Highlight some text first to reflect it!");
+
+    return;
+
+  }
+
+
+
+  const range = selection.getRangeAt(0);
+
+  const span = document.createElement("span");
+
+  span.className = "reflected-text";
+
+ 
+
+  // Surround the selected text with the reflection span
+
+  range.surroundContents(span);
+
+  selection.removeAllRanges();
+
+} // Function to get Country and Start Clock
+
+async function initLocationAndTime() {
+
+  try {
+
+    // 1. Get Country via IP API
+
+    const response = await fetch('https://ipapi.co/json/');
+
+    const data = await response.json();
+
+    document.getElementById('user-country').textContent = `${data.city}, ${data.country_name}`;
+
+  } catch (error) {
+
+    document.getElementById('user-country').textContent = "Local Time";
+
+  }
+
+
+
+  // 2. Start Live Clock
+
+  setInterval(() => {
+
+    const now = new Date();
+
+    document.getElementById('live-clock').textContent = now.toLocaleTimeString();
+
+  }, 1000);
+
+}
+
+
+
+// Call this inside your window.onload
+
+window.onload = () => {
+
+  const saved = localStorage.getItem('zela_content');
+
+  if (saved) editor.innerHTML = saved;
+
+  updateCounts();
+
+  initLocationAndTime(); // Start the clock and location
+
+ 
+
+  if (localStorage.getItem("zela_locked") === "true") {
+
+    editor.contentEditable = "false";
+
+    setTimeout(unlockDocument, 500);
+
+  }
+
+}; let currentTimeZone = "Asia/Kolkata";
+
+
+
+function updateTimeZone() {
+
+  const select = document.getElementById('countrySelect');
+
+  currentTimeZone = select.value;
+
+  // Get the city name from the dropdown text
+
+  document.getElementById('side-city').textContent = select.options[select.selectedIndex].text.split(' ')[0];
+
+}
+
+
+
+function startSideClock() {
+
+  setInterval(() => {
+
+    const now = new Date();
+
+    const timeString = now.toLocaleTimeString('en-GB', {
+
+      timeZone: currentTimeZone,
+
+      hour: '2-digit',
+
+      minute: '2-digit',
+
+      second: '2-digit',
+
+      hour12: false
+
+    });
+
+    document.getElementById('side-time').textContent = timeString;
+
+  }, 1000);
+
+}
+
+
+
+// Update your window.onload to include this:
+
+window.onload = () => {
+
+  // ... your existing load code ...
+
+  startSideClock();
+
+}; function makeElementDraggable(elmnt) {
+
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+  // Look for the specific header ID
+
+  var header = document.getElementById(elmnt.id + "-header");
+
+ 
+
+  if (header) {
+
+    header.onmousedown = dragMouseDown;
+
+  } else {
+
+    elmnt.onmousedown = dragMouseDown;
+
+  }
+
+
+
+  function dragMouseDown(e) {
+
+    // This allows clicks to pass through to the dropdown/select
+
+    if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION") return;
+
+
+
+    e = e || window.event;
+
+    pos3 = e.clientX;
+
+    pos4 = e.clientY;
+
+    document.onmouseup = closeDragElement;
+
+    document.onmousemove = elementDrag;
+
+  }
+
+
+
+  function elementDrag(e) {
+
+    e = e || window.event;
+
+    pos1 = pos3 - e.clientX;
+
+    pos2 = pos4 - e.clientY;
+
+    pos3 = e.clientX;
+
+    pos4 = e.clientY;
+
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+
+    elmnt.style.transform = "none";
+
+  }
+
+
+
+  function closeDragElement() {
+
+    document.onmouseup = null;
+
+    document.onmousemove = null;
+
+  }
+
+}
+
+
+
+
+
+// Update your onload to ensure it waits for the elements to exist
+
+window.addEventListener('load', () => {
+
+  const panel = document.getElementById("movable-panel");
+
+  if (panel) {
+
+    makeElementDraggable(panel);
+
+  }
+
+  if (typeof startSideClock === "function") {
+
+    startSideClock();
+
+  }
+
+});function changeSize(size) {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+
+  const range = selection.getRangeAt(0);
+
+  // If text is highlighted: Wrap it in a span with the CSS size
+  if (!selection.isCollapsed) {
+    const span = document.createElement("span");
+    span.style.fontSize = size;
+    
+    try {
+      range.surroundContents(span);
+    } catch (e) {
+      // Fallback for complex selections (like multiple paragraphs)
+      document.execCommand('insertHTML', false, `<span style="font-size:${size}">${selection.toString()}</span>`);
+    }
+  } 
+  // If no text is highlighted: Set size for the next character typed (WordPad style)
+  else {
+    const span = document.createElement("span");
+    span.style.fontSize = size;
+    span.innerHTML = "&#8203;"; // Hidden character to hold the font style
+    
+    range.insertNode(span);
+
+    // Move the cursor inside the new span
+    const newRange = document.createRange();
+    newRange.setStart(span, 1);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+  editor.focus();
+} function applyMagicMode() {
+  editor.focus();
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+
+  const range = selection.getRangeAt(0);
+  
+  const magicSpan = document.createElement("span");
+  magicSpan.className = "magic-floating";
+  
+  // Invisible character so you can start typing immediately
+  magicSpan.innerHTML = "&#8203;"; 
+  
+  range.insertNode(magicSpan);
+
+  const newRange = document.createRange();
+  newRange.setStart(magicSpan, 1); 
+  newRange.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(newRange);
+} function toggleFocusMode() {
+    const container = document.querySelector('.editor-container');
+    container.classList.toggle('focus-active');
+    // Add CSS to hide side panels and expand the editor to full screen
+} // The Ghost Writer's Vocabulary
+const dictionary = ["advanced", "beautiful", "capability", "document", "experience", "font", "ghostwriter", "horizontal", "intelligent", "javascript", "knowledge", "learning", "professional", "quality", "reflection", "suggestion", "tomorrow", "understand", "version", "writing", "zela"];
+
+let currentSuggestion = "";
+
+editor.addEventListener('input', (e) => {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const text = editor.innerText;
+    const lastWord = text.split(/\s+/).pop(); // Get the word currently being typed
+
+    if (lastWord.length > 1) {
+        // Find a match in the dictionary that starts with the lastWord
+        const match = dictionary.find(word => word.startsWith(lastWord.toLowerCase()) && word !== lastWord.toLowerCase());
+        
+        if (match) {
+            currentSuggestion = match.substring(lastWord.length);
+            showGhost(currentSuggestion);
+        } else {
+            clearGhost();
+        }
+    } else {
+        clearGhost();
+    }
+});
+
+// Display the gray text
+function showGhost(suggestion) {
+    clearGhost(); // Remove old ghost
+    const ghostSpan = document.createElement('span');
+    ghostSpan.id = "ghost-text";
+    ghostSpan.innerText = suggestion;
+    ghostSpan.style.color = "rgba(150, 150, 150, 0.5)"; // Light gray
+    ghostSpan.style.pointerEvents = "none";
+    ghostSpan.contentEditable = "false";
+    
+    const range = window.getSelection().getRangeAt(0);
+    range.insertNode(ghostSpan);
+    range.collapse(false);
+}
+
+function clearGhost() {
+    const oldGhost = document.getElementById('ghost-text');
+    if (oldGhost) oldGhost.remove();
+}
+
+// Accept the suggestion with the 'Tab' key
+editor.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab' && document.getElementById('ghost-text')) {
+        e.preventDefault();
+        const ghost = document.getElementById('ghost-text');
+        const textToInsert = ghost.innerText;
+        ghost.remove();
+        
+        // Insert the actual text where the ghost was
+        document.execCommand('insertText', false, textToInsert + " ");
+    }
+});let ghostWriterEnabled = true;
+
+function toggleGhostWriter() {
+    ghostWriterEnabled = !ghostWriterEnabled;
+    const btn = document.getElementById('ghost-toggle-btn');
+    const status = document.getElementById('ghost-status');
+    
+    if (ghostWriterEnabled) {
+        btn.classList.remove('off');
+        status.innerText = "ON";
+    } else {
+        btn.classList.add('off');
+        status.innerText = "OFF";
+        clearGhost(); // Immediately remove any active suggestion
+    }
+}
+
+// Wrap your existing input listener with this check:
+editor.addEventListener('input', (e) => {
+    if (!ghostWriterEnabled) return;
+    
+    // ... rest of your existing ghost writer code ...
+});</script>
+
+</body>
+
+</html> 
